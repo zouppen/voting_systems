@@ -41,7 +41,7 @@ voteMapToResult voteMap = sortBy sndOrdering $ Map.toList voteMap
 
 -- Convert vote map to an ordered list. List contains tie breaker values, too
 voteMaptoList :: Ord v => StdGen -> Map.Map v Integer -> [(Integer,v)]
-voteMaptoList r voteMap = map cleanOrder $ sort $ reorder r (Map.toList voteMap)
+voteMaptoList r voteMap = map cleanOrder $ reverse $ sort $ reorder r (Map.toList voteMap)
     where cleanOrder (votes,tie,candidate) = (votes,candidate)
 
 -- Reorders values and inserts tie breakers to snd for sorting
