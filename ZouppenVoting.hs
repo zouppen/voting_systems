@@ -17,7 +17,7 @@ countVotes (x:xs) = best x
 checkVote :: Ord t => [t] -> (Vote t) -> Bool
 checkVote candidates vote
     | best vote == worst vote = False
-    | otherwise = True
+    | otherwise = and [best `elem` candidates, worst `elem` candidates]
 
 
           
