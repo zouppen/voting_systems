@@ -3,10 +3,10 @@ module ZouppenVoting where
 -- A single vote. The first argument is a ballot for the best candidate and the
 -- second one is for the worst.
 -- Map requires a vote to be ordered (Ord) so Equality (Eq) is not enough.
-data Ord a => Vote a = Vote a a deriving Show
-
-best (Vote a _) = a 
-worst (Vote _ a) = a 
+data Ord a => Vote a = Vote {
+      best  :: a,
+      worst :: a
+    } deriving Show
 
 -- Trivial vote
 -- Takes a list of votes and returns the winner
