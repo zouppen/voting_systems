@@ -6,13 +6,14 @@ import qualified Data.Map as Map
 
 -- Some terminology:
 --
--- A voting ticket consists of two votes; one for the best and one for the worst
--- candidate as seen by the voter.
+-- A voting ticket consists of two votes; one for the best (positive
+-- vote) and one for the worst candidate (negative vote) as seen by
+-- the voter.
 
 
--- A single voting ticket. The first argument is a vote for the best candidate
--- and the second one is for the worst.
--- Map requires a vote to be ordered (Ord) so Equality (Eq) is not enough.
+-- A single voting ticket. The first argument is a vote for the best
+-- candidate and the second one is for the worst.  Map requires a vote
+-- to be ordered (Ord) so Equality (Eq) is not enough.
 data Ord a => Ticket a = Ticket {
       best  :: a,
       worst :: a
@@ -46,7 +47,15 @@ voteMaptoList r voteMap = map cleanOrder $ reverse $ sort $ reorder r (Map.toLis
 
 -- Reorders values and inserts tie breakers to snd for sorting
 reorder :: Ord v => StdGen -> [(v,Integer)] -> [(Integer,Integer,v)]
+reorder _ [] = []
 reorder r ((candidate,votes):xs) = (votes,(fst newRand),candidate) :
                                    reorder (snd newRand) xs
     where newRand = random r
-reorder _ [] = []
+
+-- Filter out tickets which have positive vote for a candidate in a given list.
+-- This is used to collect negative votes in the second round
+filterPositive :: Ord c => [Ticket c] -> [c] -> [Ticket c]
+filterPositive tickets candidates = filter hasAnyBest tickets
+    where hasBest ticket candidate = (best ticket) == candidate
+          hasAnyBest ticket = or $ map (hasBest ticket) candidates
+
