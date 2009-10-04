@@ -9,3 +9,6 @@ readTicketFile path = do
 extractVotes :: [[String]] -> [Ticket String]
 extractVotes raw = map ticketify raw
     where ticketify [best,worst] = Ticket best worst
+
+--results :: StdGen -> [Ticket String] -> String
+--results r 
