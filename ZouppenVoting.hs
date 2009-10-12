@@ -22,6 +22,10 @@ data Ord c => Ticket c = Ticket {
       worst :: c
     } deriving Show
 
+data Ord c => Result c = Result {
+      votes :: Integer,
+      candidate :: c
+    } deriving Show
 
 -- Checks if a vote is valid and contains real candidates
 checkVote :: Ord c => [c] -> (Ticket c) -> Bool
@@ -44,9 +48,9 @@ countBestVotes tickets = countVotes $ map best tickets
 --    where sndOrdering a b = compare (snd b) (snd a)
 
 -- Convert vote map to an ordered list. List contains tie breaker values, too
-voteMapToList :: Ord c => StdGen -> Map.Map c Integer -> [(Integer,c)]
+voteMapToList :: Ord c => StdGen -> Map.Map c Integer -> [Result c]
 voteMapToList r voteMap = map cleanOrder $ reverse $ sort $ reorder r (Map.toList voteMap)
-    where cleanOrder (votes,tie,candidate) = (votes,candidate)
+    where cleanOrder (votes,tie,candidate) = Result votes candidate
 
 -- Reorders values and inserts tie breakers to snd for sorting
 reorder :: Ord c => StdGen -> [(c,Integer)] -> [(Integer,Integer,c)]
@@ -56,7 +60,7 @@ reorder r ((candidate,votes):xs) = (votes,(fst newRand),candidate) :
     where newRand = random r
 
 -- Returns ordered result of the first round. StdGen is needed for tie breaks
-firstRound :: (Ord c) => StdGen -> [Ticket c] -> [(Integer,c)]
+firstRound :: (Ord c) => StdGen -> [Ticket c] -> [Result c]
 firstRound r tickets = voteMapToList r $ countBestVotes tickets
 
 -- Filter out tickets which have positive vote for a candidate in a given list.
@@ -66,3 +70,5 @@ filterPositive tickets candidates = filter hasAnyBest tickets
     where hasBest ticket candidate = (best ticket) == candidate
           hasAnyBest ticket = or $ map (hasBest ticket) candidates
 
+--results :: (Ord c) => StdGen -> [Ticket c] -> 
+--results tickets 
