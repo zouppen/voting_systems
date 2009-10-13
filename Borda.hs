@@ -50,3 +50,11 @@ mapToResult :: (Ord n,Num n,Ord c) => Map.Map c n -> [Result n c]
 mapToResult = reverse . sort . (map tupleToResult) . Map.toList
 
 tupleToResult (candidate,votes) = Result votes candidate
+
+-- Group tickets
+
+groupTicketToMap series (n,ticket) = ticketToMap (map (*(fromInteger n)) series) ticket 
+
+groupTicketsToVoteMap series tickets = sumMaps $ map (groupTicketToMap series) tickets
+
+countGroupVotes series tickets = mapToResult $ groupTicketsToVoteMap series tickets
